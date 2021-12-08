@@ -1,28 +1,39 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div id="nav">
+      <router-link to="/">
+        <header>{{ header }}</header>
+      </router-link>
+      <!-- <router-link to="/about">About</router-link> -->
+    </div>
+    <router-view />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import {} from "@/views/Home.vue";
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+  data() {
+    return {
+      header: "Nft Marketplace",
+    };
+  },
+  components: {},
+};
 </script>
 
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Comforter+Brush&display=swap");
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  font-family: Montserrat, Helvetica, Arial, "Comforter Brush", cursive,
+    sans-serif;
+}
+header {
+  font-family: "Comforter Brush";
+  font-size: 2rem;
+}
+a {
+  text-decoration: none;
+  text-decoration-color: none;
 }
 </style>
