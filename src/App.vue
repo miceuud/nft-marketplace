@@ -2,10 +2,20 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">
-        <header>{{ header }}</header>
+        <header class="logo">{{ header }}</header>
       </router-link>
       <!-- <router-link to="/about">About</router-link> -->
+      <div class="nav">
+        <ul>
+          <li v-for="link in links" :key="link.title">
+            <router-link :to="link.url">
+              {{ link.title }}
+            </router-link>
+          </li>
+        </ul>
+      </div>
     </div>
+
     <router-view />
   </div>
 </template>
@@ -16,9 +26,34 @@ export default {
   data() {
     return {
       header: "Nft Marketplace",
+      links: [
+        {
+          title: "Sell Asset",
+          url: "create-asset",
+        },
+        {
+          title: "My Collections",
+          url: "collections",
+        },
+        {
+          title: "Dashboard",
+          url: "dashboard",
+        },
+        {
+          title: "login",
+          url: "login",
+        },
+      ],
     };
   },
   components: {},
+  methods: {
+    loginButton() {
+      if (this == "login") {
+        console.log(this);
+      }
+    },
+  },
 };
 </script>
 
@@ -28,12 +63,38 @@ export default {
   font-family: Montserrat, Helvetica, Arial, "Comforter Brush", cursive,
     sans-serif;
 }
-header {
+#nav {
+  margin-top: 10px;
+}
+.logo {
   font-family: "Comforter Brush";
   font-size: 2rem;
+  margin-left: 2rem;
+  top: 10px;
 }
 a {
   text-decoration: none;
   text-decoration-color: none;
+}
+a :hover {
+  text-decoration: none;
+  text-decoration-line: none;
+}
+ul {
+  display: flex;
+}
+li {
+  list-style: none;
+  margin-right: 1.5rem;
+  font-size: 1.2rem;
+}
+
+a {
+  text-decoration: none;
+}
+.nav {
+  position: absolute;
+  right: 3rem;
+  top: 12px;
 }
 </style>

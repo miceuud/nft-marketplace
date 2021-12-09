@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- nft listing -->
     <div>
       <b-container>
         <b-row>
@@ -175,20 +176,11 @@
 
 <script>
 export default {
-  name: "Home",
-  props: {},
   data() {
     return {};
   },
+  components: {},
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-.card {
-  margin: 1rem 0;
-}
-.btn {
-  margin-left: 1rem;
-}
-</style>
+<style></style>
