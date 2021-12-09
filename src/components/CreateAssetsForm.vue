@@ -32,6 +32,8 @@
       </b-form-group>
 
       <b-button @click="createAsset"> Create Digital Asset</b-button>
+
+    
     </b-form>
   </b-container>
 </template>
@@ -65,7 +67,9 @@ export default {
         console.log("must be a number");
         return;
       }
-
+      if (this.$store.state.account === "") {
+        console.log("please sign in");
+      }
       // pass to parent
       this.$emit("createdAssets");
     },

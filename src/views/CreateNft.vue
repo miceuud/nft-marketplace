@@ -16,6 +16,7 @@ export default {
         description: "",
         amount: "",
         file: null,
+        sold: false,
       },
     };
   },
@@ -25,12 +26,14 @@ export default {
   methods: {
     // receive from child component
     createdAssets() {
-      let name = this.asset.name;
-
-      let description = this.asset.description;
-      let amount = this.asset.amount;
-
-      console.log(name, description, amount);
+      let assetObject = {
+        name: this.asset.name,
+        description: this.asset.description,
+        amount: this.asset.amount,
+        sold: this.asset.sold,
+        account: this.$store.state.account,
+      };
+      this.$store.commit("CREATE_ASSETS", assetObject);
     },
   },
 };

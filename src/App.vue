@@ -13,9 +13,11 @@
             </router-link>
           </li>
         </ul>
+        <div class="login" @click="loginButton">
+          {{ this.$store.state.account || "Login" }}
+        </div>
       </div>
     </div>
-
     <router-view />
   </div>
 </template>
@@ -39,20 +41,20 @@ export default {
           title: "Dashboard",
           url: "dashboard",
         },
-        {
-          title: "login",
-          url: "login",
-        },
       ],
     };
   },
   components: {},
   methods: {
-    loginButton() {
-      if (this == "login") {
-        console.log(this);
+    async loginButton() {
+      if (typeof window.ethereum !== "undefined") {
+        let result = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        this.$store.state.account = result[0];
       }
     },
+    async checkTarget() {},
   },
 };
 </script>
@@ -88,7 +90,6 @@ li {
   margin-right: 1.5rem;
   font-size: 1.2rem;
 }
-
 a {
   text-decoration: none;
 }
@@ -96,5 +97,10 @@ a {
   position: absolute;
   right: 3rem;
   top: 12px;
+}
+.login {
+  position: relative;
+  font-size: 1.2rem;
+  cursor: pointer;
 }
 </style>
