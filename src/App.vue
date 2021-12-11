@@ -54,7 +54,6 @@ export default {
         this.$store.state.account = result[0];
       }
     },
-    async checkTarget() {},
   },
 };
 </script>

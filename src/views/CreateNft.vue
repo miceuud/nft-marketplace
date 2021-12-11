@@ -27,6 +27,7 @@ export default {
     // receive from child component
     createdAssets() {
       let assetObject = {
+        id: Math.random * 10000000,
         name: this.asset.name,
         description: this.asset.description,
         amount: this.asset.amount,

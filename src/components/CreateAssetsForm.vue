@@ -30,10 +30,7 @@
       <b-form-group>
         <b-form-file required v-model="asset.file"> </b-form-file>
       </b-form-group>
-
       <b-button @click="createAsset"> Create Digital Asset</b-button>
-
-    
     </b-form>
   </b-container>
 </template>
@@ -50,26 +47,8 @@ export default {
   },
   methods: {
     createAsset() {
-      if (!this.asset.name) {
-        console.log(`name must be filled`);
-        return;
-      }
-      if (!this.asset.description) {
-        console.log(`description must be filled`);
-        return;
-      }
-      if (!this.asset.amount) {
-        console.log(`amount must be entered`);
-        return;
-      }
-
-      if (!Number(this.asset.amount.trim())) {
-        console.log("must be a number");
-        return;
-      }
-      if (this.$store.state.account === "") {
-        console.log("please sign in");
-      }
+    //  check inputs
+    
       // pass to parent
       this.$emit("createdAssets");
     },

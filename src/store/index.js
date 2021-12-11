@@ -13,6 +13,8 @@ export default new Vuex.Store({
       state.assets.push(value)
     },
   },
-  actions: {},
+  actions: {
+    
+  },
   modules: {},
 });
