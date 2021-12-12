@@ -10,7 +10,7 @@
         <div>
           <b-button> Explore </b-button>
           <b-button>
-            <router-link to="/create-asset"> Create </router-link>
+            <router-link to="create-asset"> Create </router-link>
           </b-button>
         </div>
       </b-container>

@@ -14,7 +14,7 @@
           </li>
         </ul>
         <div class="login" @click="loginButton">
-          {{ this.$store.state.account || "Login" }}
+          {{ $store.state.account || "Login" }}
         </div>
       </div>
     </div>
@@ -48,10 +48,10 @@ export default {
   methods: {
     async loginButton() {
       if (typeof window.ethereum !== "undefined") {
-        let result = await window.ethereum.request({
+        let account = await window.ethereum.request({
           method: "eth_requestAccounts",
         });
-        this.$store.state.account = result[0];
+        this.$store.dispatch(" CREATE_LOGIN_ACCOUNT(", account[0]);
       }
     },
   },
