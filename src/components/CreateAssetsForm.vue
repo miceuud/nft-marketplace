@@ -1,7 +1,7 @@
 <template>
   <b-container>
     <!-- pass props  -->
-    <b-form v-bind="asset">
+    <b-form v-bind="asset" @submit.prevent="createAsset">
       <b-form-group>
         <b-form-input
           placeholder="Asset Name"
@@ -28,9 +28,9 @@
         </b-form-input>
       </b-form-group>
       <b-form-group>
-        <b-form-file required v-model="asset.file"> </b-form-file>
+        <b-form-file required v-model="asset.file" ref="file"> </b-form-file>
       </b-form-group>
-      <b-button @click="createAsset"> Create Digital Asset</b-button>
+      <b-button type="submit"> Create Digital Asset</b-button>
     </b-form>
   </b-container>
 </template>
@@ -47,8 +47,8 @@ export default {
   },
   methods: {
     createAsset() {
-    //  check inputs
-    
+      //  check inputs
+
       // pass to parent
       this.$emit("createdAssets");
     },
