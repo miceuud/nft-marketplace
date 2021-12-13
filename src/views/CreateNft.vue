@@ -1,8 +1,6 @@
 <template>
   <div>
-    <!-- <create-assets :asset="asset" @createdAssets="createdAssets" /> -->
     <b-container>
-      <!-- pass props  -->
       <b-form v-bind="asset" @submit.prevent="createAsset">
         <b-form-group>
           <b-form-input
@@ -49,7 +47,8 @@ export default {
         description: "",
         amount: "",
         sold: false,
-        file: null,
+        nft: null,
+        account: "",
       },
     };
   },
@@ -57,7 +56,7 @@ export default {
   methods: {
     // field file for input
     saveFile(event) {
-      this.asset.file = event.target.files[0];
+      this.asset.nft = event.target.files[0];
     },
     // initialize ipfs
     async ipfsClient(arg) {
@@ -67,22 +66,29 @@ export default {
         return response.path;
       } catch (e) {
         console.log(e.message);
+        return;
       }
     },
     clearFiles() {
       this.$refs["file-input"].reset();
     },
+    // create nft
     async createAsset() {
       if (
         !this.asset.name ||
         !this.asset.description ||
         !this.asset.amount ||
-        !this.asset.file
+        !this.asset.nft
       ) {
         console.log("fields are required");
         return;
       }
 
+      if (!this.$store.state.account) {
+        console.log("Please login with a valid wallet");
+        return;
+      }
+      // nft ipfs url
       let imagePath = await this.ipfsClient(this.asset.file);
       imagePath = `https://ipfs.infura.io:5001/api/v0/${imagePath}`;
 
@@ -93,13 +99,18 @@ export default {
         description: this.asset.description,
         amount: this.asset.amount,
         sold: false,
-        nftUri: imagePath,
+        nft: imagePath,
+        account: this.$store.state.account,
       };
-      console.log(JSON.stringify(assets));
-      let assetUri = await this.ipfsClient(JSON.stringify(assets));
-      console.log(assetUri);
+      // asset ipfs uri
+      try {
+        let assetUri = await this.ipfsClient(JSON.stringify(assets));
+        console.log(assetUri);
+      } catch (error) {
+        console.log(error.message);
+        return;
+      }
 
-      this.$store.commit("CREATE_ASSETS", this.asset);
       for (const keys in this.asset) {
         // reset value
         this.asset[keys] = "";

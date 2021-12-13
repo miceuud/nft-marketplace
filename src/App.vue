@@ -51,8 +51,9 @@ export default {
         let account = await window.ethereum.request({
           method: "eth_requestAccounts",
         });
-        this.$store.dispatch(" CREATE_LOGIN_ACCOUNT(", account[0]);
+        this.$store.dispatch("CREATE_LOGIN_ACCOUNT", account[0]);
       }
+      console.log("Please install a wallet");
     },
   },
 };
