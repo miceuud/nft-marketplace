@@ -15,7 +15,7 @@
                   <!-- {{ asset[index].description }} -->
                 </b-card-text>
                 <template #footer>
-                  <small class="text-muted">Last updated 3 mins ago</small>
+                  <small class="text-muted">Amount: </small>
                   <b-button href="#" variant="primary">Buy</b-button>
                 </template>
               </b-card>
@@ -45,7 +45,7 @@ export default {
     };
   },
   mounted: function () {
-    console.log(this.$store.state.assets[0]);
+    // console.log(this.$store.state.assets[0]);
     // },
   },
 };

@@ -32,7 +32,6 @@ export default {
 }
 .intro-items div {
   font-size: 2rem;
-  /* text-transform: capitalize; */
 }
 .btn {
   margin: 1rem 10px;
