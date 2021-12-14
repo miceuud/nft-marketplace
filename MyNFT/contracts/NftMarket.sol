@@ -14,39 +14,61 @@ contract NFTMarket is ReentrancyGuard, ERC721 {
   uint listingPrice = 0.015 ether;
 
   struct NftItem {
+    uint index;
     address payable nftCreator;
     address payable nftBuyer;
     uint _tokenId;
-    uint _tokenIndex;
     bool sold;
     uint price;
   }
-  // use this to map over itemnumber to Nft-Item  ?item-id
+
+  event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+
+
+  // use this to map over item index to Nft-Item  ?item-id
   mapping(uint => NFTItem) MarketplaceItem;
 
   constructor () {
     marketplaceOwner = msg.sender;
   }
 
-  function sellNftAsset (address _marketplaceAddress, uint _tokenId, uint price) public payable {
+  function sellNftAsset (address nftContractAddress, uint _tokenId, uint price) public payable {
     require(msg.value == listingPrice, "Please provide the listing amount");
     require(price > 0 , "Please provide the sales amount");
 
     // require()
     _tokenIds.increment();
+    // 
     uint index = _tokenIds.current();
 
-    MarketplaceItem[index] = NftItem (
-      msg.sender,
-      address(0),
-      _tokenURI,
-      index,
-      false,
-      price
-    );
-   transferFrom(msg.sender, address(this), Marke);
+    NftItem nftAsset = NftItem( 
+       index,
+       msg.sender,
+       address(0),
+      _tokenId,
+       false,
+       price
+      );
+
+
+    // MarketplaceItem[index] = NftItem (
+    //   msg.sender,
+    //   address(0),
+    //   _tokenURI,
+    //   index,
+    //   false,
+    //   price
+    // );
+   transferFrom(msg.sender, address(this), _tokenId );
+   emit Transfer(msg.sender,address(this), _tokenId);
   }
-  function buyNftAsset () public  {
+
+  function buyNftAsset (uint price, uint _itemId) public  payable{
+    require(msg.value == price, "provide the price amount");
+
+
+
+
 
   
   }
