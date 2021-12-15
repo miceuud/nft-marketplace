@@ -69,6 +69,7 @@ export default {
         return;
       }
     },
+    // method on bootstrap-vue
     clearFiles() {
       this.$refs["file-input"].reset();
     },
