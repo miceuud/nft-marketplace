@@ -1,11 +1,11 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-describe("NftMarket", function () {
+describe("MyNFT", function () {
   it("Should return the new greeting once it's changed", async function () {
-    const nftmarket = await ethers.getContractFactory("NftMarket");
-    const nftmarket = await Greeter.deploy("");
-    await nftmarket.deployed();
+    const NFTMarket = await ethers.getContractFactory("NFTMarket");
+    const nftnarket = await NFTMarket.deploy();
+    await mynft.deployed();
 
     // expect(await greeter.greet()).to.equal("Hello, world!");
 
