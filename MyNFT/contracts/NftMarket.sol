@@ -24,7 +24,6 @@ contract NFTMarket is ERC721, ReentrancyGuard, Ownable {
     uint price;
   }
 
-  NftItem[] nftItems;
   event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
   error NoAssetFound(string msg);
 
@@ -39,32 +38,12 @@ contract NFTMarket is ERC721, ReentrancyGuard, Ownable {
     require(msg.value == listingPrice, "Please provide the listing amount");
     require(price > 0 , "Please provide the sales amount");
 
+   
+
     _tokenIds.increment();
     uint index = _tokenIds.current();
     itemsCount = _tokenIds.current();
 
-    // map a struct item to an index
-    // MarketplaceItem[index] = NftItem( 
-    //    index,
-    //    msg.sender,
-    //    address(0),
-    //   _tokenId,
-    //    false,
-    //    price
-    //   );
-
-   safeTransferFrom(msg.sender, address(this), _tokenId );
-   emit Transfer(msg.sender,address(this), _tokenId);
-  }
-
-  function buyNftAsset (uint index) public  payable nonReentrant {
-    uint price = MarketplaceItem[index].price;
-    uint tokenId = MarketplaceItem[index].tokenId;
-
-    require(msg.value == price, "please provide the price amount");
-    
-    safeTransferFrom(address(this), msg.sender, tokenId);
-    // check this. if new owner wants to resell 
     MarketplaceItem[index] = NftItem( 
        index,
        msg.sender,
@@ -74,20 +53,42 @@ contract NFTMarket is ERC721, ReentrancyGuard, Ownable {
        price
       );
 
-    Transfer(address(this), msg.sender, tokenId);
+   safeTransferFrom(msg.sender, address(this), _tokenId );
+    // marketplace owner withdrawer
+   marketplaceOwner.transfer(listing);
+
+   emit Transfer(msg.sender,address(this), _tokenId);
+  }
+
+  function buyNftAsset (uint index) public  payable nonReentrant {
+    uint price = MarketplaceItem[index].price;
+    uint tokenId = MarketplaceItem[index].tokenId;
+
+    require(msg.value == price, "please provide the price amount");
+    
+    payabale(MarketplaceItem[index].owner).transfer(msg.value);
+    safeTransferFrom(address(this), msg.sender, tokenId);
+
+    MarketplaceItem[index].owner = msg.sender;
+    MarketplaceItem[index].sold = true;
+    
+    emit Transfer(address(this), msg.sender, tokenId);
   }
 
   function listAllNft () onlyOwner returns(NftItem[]) { 
+    NftItem[] nftItems;
     for (uint256 index = 0; index < itemsCount - 1; index++) {
       nftItems.push(MarketplaceItem[index]);
     }
     return nftItems;
   }
 
-  function listMyAssets () {
+  function listMyAssets () public returns (NftItem[]){
      for (uint256 index = 0; index < itemsCount - 1; index++) {
-       if (MarketplaceItem[index].owner == msg.sender) nftItems.push(MarketplaceItem[index]);
-       else revert NoAssetFound("You don't have any asset")
+       if (MarketplaceItem[index].owner == msg.sender) {
+          nftItems.push(MarketplaceItem[index]);
+          retunNftItem[];
+       } else revert NoAssetFound("You don't have any asset");
     } 
   }
 
