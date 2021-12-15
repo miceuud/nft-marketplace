@@ -2,18 +2,23 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 describe("MyNFT", function () {
-  it("Should return the new greeting once it's changed", async function () {
+  it("nft sales transaction ", async function () {
     const NFTMarket = await ethers.getContractFactory("NFTMarket");
     const nftnarket = await NFTMarket.deploy();
     await mynft.deployed();
 
-    // expect(await greeter.greet()).to.equal("Hello, world!");
+    const address = mynft.address;
 
-    // const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
+    const MyNFT = await ethers.getContractFactory("MyNFT");
+    const mynft = await MyNFT.deploy(address);
+    await mynft.deployed();
 
-    // wait until the transaction is mined
-    // await setGreetingTx.wait();
+    const mynftAddress = mynft.address;
 
-    // expect(await greeter.greet()).to.equal("Hola, mundo!");
+    
+
+
+
+
   });
 });
