@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract MyNFT is ERC721 {
+contract MyNFT is ERC721URIStorage {
  
   using Counters for Counters.Counter;
   // unique token id's
@@ -13,11 +13,11 @@ contract MyNFT is ERC721 {
 
   uint public _tokenId;
 
-  constructor(address marketplace) ERC721("MyNFT Tokens", "UMT") {
+  constructor(address marketplace) ERC721("MyNFT-Tokens", "UMT") {
     marketplaceContractAddress = marketplace;
   }
 
-  function creatToken (string memory _tokenURI) public returns (uint){
+  function creatToken (string memory _tokenURI) public returns (uint) {
     _tokenIds.increment();
      _tokenId = _tokenIds.current();
 
