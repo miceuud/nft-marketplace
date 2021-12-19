@@ -11,13 +11,14 @@ contract MyNFT is ERC721URIStorage {
   Counters.Counter private _tokenIds;
   address marketplaceContractAddress;
 
-  uint public _tokenId;
+
 
   constructor(address marketplace) ERC721("MyNFT-Tokens", "UMT") {
     marketplaceContractAddress = marketplace;
   }
 
-  function creatToken (string memory _tokenURI) public returns (uint) {
+  function createToken (string memory _tokenURI) public returns (uint) {
+      uint _tokenId;
     _tokenIds.increment();
      _tokenId = _tokenIds.current();
 

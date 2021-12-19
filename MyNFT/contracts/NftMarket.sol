@@ -5,10 +5,12 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-abstract contract NFTMarket is ERC721URIStorage, ReentrancyGuard {
+contract NFTMarket is ERC721URIStorage, ReentrancyGuard {
 
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
+
+  // add royality to the contract
 
   address marketplaceOwner;
   uint listingPrice = 0.015 ether;
@@ -29,11 +31,11 @@ abstract contract NFTMarket is ERC721URIStorage, ReentrancyGuard {
   // use this to map over item index to Nft-Item  ?item-id
   mapping(uint => NftItem) CreateAsset;
 
-  constructor () {
+  constructor () ERC721("MyNFT-Tokens", "UMT") {
     marketplaceOwner = msg.sender;
   }
 
-  function sellNftAsset (uint _tokenId, uint price) public payable nonReentrant {
+  function sellNftAsset (uint _tokenId, uint price) public payable nonReentrant returns(uint) {
     require(msg.value == listingPrice, "Please provide the listing amount");
     require(price >  1 wei, "Please provide the sales amount");
 
@@ -51,7 +53,9 @@ abstract contract NFTMarket is ERC721URIStorage, ReentrancyGuard {
       // marketplace owner withdrawer
    payable(marketplaceOwner).transfer(msg.value);
    safeTransferFrom(msg.sender, address(this), _tokenId );
-   emit Transfer(msg.sender,address(this), _tokenId);
+
+   return CreateAsset[index].price;
+  //  emit Transfer(msg.sender,address(this), _tokenId);
   }
 
   function buyNftAsset (uint index) public  payable nonReentrant {
@@ -61,6 +65,7 @@ abstract contract NFTMarket is ERC721URIStorage, ReentrancyGuard {
     require(msg.value == price, "please provide the price amount");
     
     payable(CreateAsset[index].owner).transfer(msg.value);
+    // IERC721(nftAddress).safeTransferFrom(address(this), msg.sender, tokenId);
     safeTransferFrom(address(this), msg.sender, tokenId);
 
     CreateAsset[index].owner = msg.sender;
