@@ -14,10 +14,9 @@ describe("MyNFT", function () {
     const myNft = await MyNFT.deploy(markeplaceAddress);
 
     await myNft.deployed();
-    const tokenId = await myNft.createToken("www.mynftlink.com");
-    await tokenId.wait();
-    console.log(tokenId);
+    let tokenId = await myNft.createToken("www.mynftlink.com");
+    tokenId = await tokenId.wait();
 
-    expect(await nftmarket.sellNftAsset(1, 200)).to.be.be("number");
+    console.log(tokenId);
   });
 });
