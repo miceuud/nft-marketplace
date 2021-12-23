@@ -14,7 +14,7 @@ contract NFTMarket is ERC721URIStorage, ReentrancyGuard {
   // add royality to the contract
 
   address marketplaceOwner;
-  uint listingPrice = 1 ether;
+  uint listingPrice = 1 wei;
   uint itemsCount;
 
   struct NftItem {
