@@ -52,8 +52,10 @@ export default {
           method: "eth_requestAccounts",
         });
         this.$store.dispatch("CREATE_LOGIN_ACCOUNT", account[0]);
+        console.log("this is the selectd account", await window.ethereum.selectedAddress);
+      } else {
+        console.log("Please install a wallet");
       }
-      console.log("Please install a wallet");
     },
   },
 };

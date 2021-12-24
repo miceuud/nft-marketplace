@@ -34,19 +34,15 @@
 <script>
 export default {
   name: "Home",
-  // props: {
-  //   asset:  {
-  //     type: Object
-  //   }
-  // },
   data() {
     return {
       data: "there are no nft yet",
     };
   },
   mounted: function () {
-    // console.log(this.$store.state.assets[0]);
-    // },
+    // async function listAllAssets() {
+    //   console.log("here");
+    // }
   },
 };
 </script>

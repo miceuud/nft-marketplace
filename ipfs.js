@@ -5,18 +5,12 @@ const fs = require("fs");
 
 let picture = fs.readFileSync("./src/assets/nft.png");
 
-let data = {
-  name: "mynft",
-  sold: false,
-  file: picture,
-  amount: 1,
-};
 
 // console.log(file);
 
 async function ipfsClient() {
   const ipfs = await create("https://ipfs.infura.io:5001/api/v0");
-  let response = await ipfs.add(data);
+  let response = await ipfs.add(picture);
   console.log(response);
 }
 

@@ -10,6 +10,7 @@
   "dependencies": {
     "bootstrap-vue": "^2.21.2",
     "core-js": "^3.6.5",
+    "ethers": "^5.5.2",
     "ipfs-http-client": "^54.0.2",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
