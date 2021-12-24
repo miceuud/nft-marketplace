@@ -21,7 +21,7 @@
         <b-form-group>
           <b-form-input
             placeholder="Price in ETH"
-            type="number"
+            type="text"
             v-model="asset.amount"
             required
           >
@@ -39,6 +39,9 @@
 
 <script>
 import { create } from "ipfs-http-client";
+import { ethers } from "ethers";
+import NFTMarket from "../artifacts/contracts/NftMarket.sol/NFTMarket.json";
+import MyNFT from "../artifacts/contracts/Nft.sol/MyNFT.json";
 export default {
   data() {
     return {
@@ -52,12 +55,12 @@ export default {
       },
     };
   },
-  components: {},
   methods: {
-    // field file for input
+    // get image
     saveFile(event) {
       this.asset.nft = event.target.files[0];
     },
+
     // initialize ipfs
     async ipfsClient(arg) {
       try {
@@ -69,10 +72,7 @@ export default {
         return;
       }
     },
-    // method on bootstrap-vue
-    clearFiles() {
-      this.$refs["file-input"].reset();
-    },
+
     // create nft
     async createAsset() {
       if (
@@ -90,26 +90,61 @@ export default {
         return;
       }
       // nft ipfs url
-      let imagePath = await this.ipfsClient(this.asset.file);
+      let imagePath = await this.ipfsClient(this.asset.nft);
       imagePath = `https://ipfs.infura.io:5001/api/v0/${imagePath}`;
-
-      console.log(imagePath);
 
       let assets = {
         name: this.asset.name,
         description: this.asset.description,
-        amount: this.asset.amount,
+        amount: parseInt(this.asset.amount),
         sold: false,
         nft: imagePath,
         account: this.$store.state.account,
       };
       // asset ipfs uri
+      let assetUri;
       try {
-        let assetUri = await this.ipfsClient(JSON.stringify(assets));
-        console.log(assetUri);
+        assetUri = await this.ipfsClient(JSON.stringify(assets));
+        console.log(`this is the image uri: ${assetUri}`);
       } catch (error) {
         console.log(error.message);
         return;
+      }
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contractAddress = process.env.VUE_APP_MARKETPLACE_CONTRACT_ADDRESS;
+
+      const nftAddress = process.env.VUE_APP_NFT_CONTRACT_ADDRESS;
+
+      // create item
+      const nftContract = new ethers.Contract(nftAddress, MyNFT.abi, signer);
+      // create Asset
+      let id;
+      try {
+        // create an nft
+        let nftTokenId = await nftContract.createToken(assetUri);
+        id = await nftTokenId.wait();
+        id = await id.events[0].args[2].toString();
+
+        console.log("this is the token id", id);
+      } catch (error) {
+        console.log(error.message);
+      }
+
+      const marketplaceContract = new ethers.Contract(
+        contractAddress,
+        NFTMarket.abi,
+        signer
+      );
+      try {
+        // upload nft to marketplace
+        let createAsset = await marketplaceContract.sellNftAsset(id, 1, {
+          value: 100000,
+        });
+        createAsset.wait();
+      } catch (error) {
+        console.log(error.message);
       }
 
       for (const keys in this.asset) {
@@ -117,7 +152,7 @@ export default {
         this.asset[keys] = "";
       }
       // reset the file input field
-      this.clearFiles();
+      this.$refs["file-input"].reset();
       this.$router.push("/");
     },
   },
