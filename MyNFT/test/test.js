@@ -16,7 +16,8 @@ describe("MyNFT", function () {
     await myNft.deployed();
     let tokenId = await myNft.createToken("www.mynftlink.com");
     tokenId = await tokenId.wait();
+    tokenId = await tokenId.events[0].args[2].toString();
 
-    console.log(tokenId);
+    expect(Number(tokenId)).to.be.a("number");
   });
 });

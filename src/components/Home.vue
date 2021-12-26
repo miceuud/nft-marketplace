@@ -39,11 +39,11 @@ export default {
       data: "there are no nft yet",
     };
   },
-  mounted: function () {
-    // async function listAllAssets() {
-    //   console.log("here");
-    // }
-  },
+  // mounted: function () {
+  //   // async function listAllAssets() {
+  //   //   console.log("here");
+  //   // }
+  // },
 };
 </script>
 
