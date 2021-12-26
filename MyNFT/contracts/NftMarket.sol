@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+// import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
@@ -14,11 +15,12 @@ contract NFTMarket is ERC721URIStorage, ReentrancyGuard {
   // add royality to the contract
 
   address marketplaceOwner;
-  uint listingPrice = 1 wei;
+  uint listingPrice = 1 ether;
   uint itemsCount;
 
   struct NftItem {
     uint index;
+    address nftAddress;
     address owner;
     uint _tokenId;
     bool sold;
@@ -28,24 +30,23 @@ contract NFTMarket is ERC721URIStorage, ReentrancyGuard {
   NftItem[] myAssets;
 
   error NoAssetFound(string msg);
-
-  // use this to map over item index to Nft-Item  ?item-id
   mapping(uint => NftItem) CreateAsset;
 
   constructor () ERC721("MyNFT-Tokens", "UMT") {
     marketplaceOwner = msg.sender;
   }
 
-  function sellNftAsset (uint _tokenId, uint price) public payable nonReentrant returns(uint) {
+  function sellNftAsset (address nftAddress, uint _tokenId, uint price) public payable nonReentrant returns(uint) {
     require(msg.value == listingPrice, "Please provide the listing amount");
     require(price >  1 wei, "Please provide the sales amount");
 
     _tokenIds.increment();
-    uint index = _tokenIds.current();
+    // uint index = _tokenIds.current();
     itemsCount = _tokenIds.current();
 
-    CreateAsset[index] = NftItem( 
-       index,
+    CreateAsset[_tokenId] = NftItem( 
+       itemsCount,
+       nftAddress,
        msg.sender,
       _tokenId,
        false,
@@ -55,7 +56,7 @@ contract NFTMarket is ERC721URIStorage, ReentrancyGuard {
    payable(marketplaceOwner).transfer(msg.value);
    safeTransferFrom(msg.sender, address(this), _tokenId );
 
-   return CreateAsset[index].price;
+   return CreateAsset[_tokenId].price;
   //  emit Transfer(msg.sender,address(this), _tokenId);
   }
 

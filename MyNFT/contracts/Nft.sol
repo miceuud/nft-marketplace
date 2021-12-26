@@ -27,6 +27,6 @@ contract MyNFT is ERC721URIStorage {
     _setTokenURI(_tokenId, _tokenURI);
     setApprovalForAll(marketplaceContractAddress, true);
 
-    return _tokenId;
+    return _tokenId ;
   }
 }

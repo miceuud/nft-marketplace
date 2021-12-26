@@ -60,7 +60,6 @@ export default {
     saveFile(event) {
       this.asset.nft = event.target.files[0];
     },
-
     // initialize ipfs
     async ipfsClient(arg) {
       try {
@@ -72,7 +71,6 @@ export default {
         return;
       }
     },
-
     // create nft
     async createAsset() {
       if (
@@ -90,8 +88,13 @@ export default {
         return;
       }
       // nft ipfs url
-      let imagePath = await this.ipfsClient(this.asset.nft);
-      imagePath = `https://ipfs.infura.io:5001/api/v0/${imagePath}`;
+      let imagePath;
+      try {
+        imagePath = await this.ipfsClient(this.asset.nft);
+        imagePath = `https://ipfs.infura.io:5001/api/v0/${imagePath}`;
+      } catch (error) {
+        console.error(error);
+      }
 
       let assets = {
         name: this.asset.name,
@@ -103,6 +106,7 @@ export default {
       };
       // asset ipfs uri
       let assetUri;
+
       try {
         assetUri = await this.ipfsClient(JSON.stringify(assets));
         console.log(`this is the image uri: ${assetUri}`);
@@ -113,9 +117,13 @@ export default {
 
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-      const contractAddress = process.env.VUE_APP_MARKETPLACE_CONTRACT_ADDRESS;
+      const contractAddress =
+        process.env.VUE_APP_MARKETPLACE_CONTRACT_ADDRESS ||
+        "0x0EeD888FE50bBB841AEebDCE0b4ecA3BB5ce07Fc";
 
-      const nftAddress = process.env.VUE_APP_NFT_CONTRACT_ADDRESS;
+      const nftAddress =
+        process.env.VUE_APP_NFT_CONTRACT_ADDRESS ||
+        "0x1Cc624328b642798fB1D112C6442dE6D36EbA531";
 
       // create item
       const nftContract = new ethers.Contract(nftAddress, MyNFT.abi, signer);
@@ -125,11 +133,11 @@ export default {
         // create an nft
         let nftTokenId = await nftContract.createToken(assetUri);
         id = await nftTokenId.wait();
+        console.log(id);
+        // get token id
         id = await id.events[0].args[2].toString();
-
-        console.log("this is the token id", id);
       } catch (error) {
-        console.log(error.message);
+        console.log("error here", error.message);
       }
 
       const marketplaceContract = new ethers.Contract(
@@ -137,14 +145,27 @@ export default {
         NFTMarket.abi,
         signer
       );
+
+      let price = ethers.utils.parseUnits(this.asset.amount, "ether");
+
+      let listing = price.toString();
+      let overrides = {
+        value: listing,
+        gasLimit: 2000000,
+      };
+
       try {
         // upload nft to marketplace
-        let createAsset = await marketplaceContract.sellNftAsset(id, 1, {
-          value: 100000,
-        });
-        createAsset.wait();
+        let createAsset = await marketplaceContract.sellNftAsset(
+          "0x1Cc624328b642798fB1D112C6442dE6D36EbA531",
+          id,
+          price,
+          overrides
+        );
+        createAsset = await createAsset.wait();
+        console.log(createAsset);
       } catch (error) {
-        console.log(error.message);
+        console.log("this is error", error);
       }
 
       for (const keys in this.asset) {
