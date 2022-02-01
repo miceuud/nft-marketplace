@@ -6,16 +6,13 @@ async function main() {
   const nftmarket = await NFTMarket.deploy();
 
   await nftmarket.deployed();
-
   const markeplaceAddress = nftmarket.address;
   console.log("this is the marketplace add:", markeplaceAddress);
+
   const MyNFT = await hre.ethers.getContractFactory("MyNFT");
   let myNft = await MyNFT.deploy(markeplaceAddress);
-
   myNft = await myNft.deployed();
-  //  let nftAddress = myNft.address;
   console.log("this is the nft add:", myNft.address);
-
 }
 
 main()
@@ -23,4 +20,4 @@ main()
   .catch((error) => {
     console.error(error);
     process.exit(1);
-  });
+    });
