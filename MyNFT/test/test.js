@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 describe("MyNFT", function () {
-  it("nft url ", async function () {
+  it("should return token id ", async function () {
     const NFTMarket = await hre.ethers.getContractFactory("NFTMarket");
     const nftmarket = await NFTMarket.deploy();
 
@@ -14,10 +14,12 @@ describe("MyNFT", function () {
     const myNft = await MyNFT.deploy(markeplaceAddress);
 
     await myNft.deployed();
+    // create nft
     let tokenId = await myNft.createToken("www.mynftlink.com");
     tokenId = await tokenId.wait();
     tokenId = await tokenId.events[0].args[2].toString();
 
     expect(Number(tokenId)).to.be.a("number");
+    expect(Number(tokenId)).to.equal(1);
   });
 });

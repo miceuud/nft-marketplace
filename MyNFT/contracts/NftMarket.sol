@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-// import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
@@ -11,8 +9,6 @@ contract NFTMarket is ERC721URIStorage, ReentrancyGuard {
 
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
-
-  // add royality to the contract
 
   address marketplaceOwner;
   uint listingPrice = 1 ether;
@@ -26,22 +22,21 @@ contract NFTMarket is ERC721URIStorage, ReentrancyGuard {
     bool sold;
     uint price;
   }
-  NftItem[] nftItems;
+  
   NftItem[] myAssets;
 
   error NoAssetFound(string msg);
-  mapping(uint => NftItem) CreateAsset;
+  mapping(uint => NftItem) public CreateAsset;
 
   constructor () ERC721("MyNFT-Tokens", "UMT") {
     marketplaceOwner = msg.sender;
   }
 
-  function sellNftAsset (address nftAddress, uint _tokenId, uint price) public payable nonReentrant returns(uint) {
+  function sellNftAsset (address nftAddress, uint _tokenId, uint nfAmount) public payable nonReentrant {
     require(msg.value == listingPrice, "Please provide the listing amount");
-    require(price >  1 wei, "Please provide the sales amount");
+    require(nfAmount >  1 wei, "Please provide the sales amount");
 
     _tokenIds.increment();
-    // uint index = _tokenIds.current();
     itemsCount = _tokenIds.current();
 
     CreateAsset[_tokenId] = NftItem( 
@@ -50,17 +45,17 @@ contract NFTMarket is ERC721URIStorage, ReentrancyGuard {
        msg.sender,
       _tokenId,
        false,
-       price
+       nfAmount
       );
-      // marketplace owner withdrawer
-   payable(marketplaceOwner).transfer(msg.value);
-   safeTransferFrom(msg.sender, address(this), _tokenId );
+      
+    // payable(marketplaceOwner).transfer(msg.value);
+  //  transfer right to maarketplace
+    IERC721(nftAddress).transferFrom(msg.sender, address(this), _tokenId);
 
-   return CreateAsset[_tokenId].price;
-  //  emit Transfer(msg.sender,address(this), _tokenId);
+    emit Transfer(msg.sender,address(this), _tokenId); 
   }
 
-  function buyNftAsset (uint index) public  payable nonReentrant {
+  function buyNftAsset (uint index) public payable nonReentrant {
     uint price = CreateAsset[index].price;
     uint tokenId = CreateAsset[index]._tokenId;
 
@@ -76,13 +71,21 @@ contract NFTMarket is ERC721URIStorage, ReentrancyGuard {
     emit Transfer(address(this), msg.sender, tokenId);
   }
 
-  function listAllNft () public returns (NftItem[] memory ) { 
-    if(itemsCount > 0) {
-       for (uint256 index = 0; index < itemsCount ; index++) {
-       nftItems.push(CreateAsset[index]);
+  function listAllNft () public view returns (NftItem[] memory ) { 
+  
+    if(itemsCount > 0 ) {
+      NftItem[] memory nftItems = new NftItem[](itemsCount);
+    
+     for (uint256 index = 0; index <= itemsCount ; index++) {
+      //  nftItems.push(CreateAsset[index]);
+      nftItems[index] = CreateAsset[index];
     }  
-    } else revert NoAssetFound("No asset has been uploaded to the marketplace");
-   return nftItems;
+    return nftItems;
+    } else {
+      revert NoAssetFound("no asset found");
+    }
+    // } else revert NoAssetFound("No asset has been uploaded to the marketplace");
+   
   }
 
   function listMyAssets () public returns (NftItem[] memory){     

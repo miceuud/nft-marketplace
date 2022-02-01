@@ -88,12 +88,13 @@ export default {
         return;
       }
       // nft ipfs url
-      let imagePath;
+      let imageUrl;
       try {
-        imagePath = await this.ipfsClient(this.asset.nft);
-        imagePath = `https://ipfs.infura.io:5001/api/v0/${imagePath}`;
+        imageUrl = await this.ipfsClient(this.asset.nft);
+        imageUrl = `https://ipfs.infura.io:5001/api/v0/${imageUrl}`;
       } catch (error) {
         console.error(error);
+        return;
       }
 
       let assets = {
@@ -101,7 +102,7 @@ export default {
         description: this.asset.description,
         amount: parseInt(this.asset.amount),
         sold: false,
-        nft: imagePath,
+        nft: imageUrl,
         account: this.$store.state.account,
       };
       // asset ipfs uri
@@ -119,11 +120,10 @@ export default {
       const signer = provider.getSigner();
       const contractAddress =
         process.env.VUE_APP_MARKETPLACE_CONTRACT_ADDRESS ||
-        "0x0EeD888FE50bBB841AEebDCE0b4ecA3BB5ce07Fc";
-
+        0xc6e7df5e7b4f2a278906862b61205850344d4e7d;
       const nftAddress =
         process.env.VUE_APP_NFT_CONTRACT_ADDRESS ||
-        "0x1Cc624328b642798fB1D112C6442dE6D36EbA531";
+        0x59b670e9fa9d0a427751af201d676719a970857b;
 
       // create item
       const nftContract = new ethers.Contract(nftAddress, MyNFT.abi, signer);
@@ -133,11 +133,12 @@ export default {
         // create an nft
         let nftTokenId = await nftContract.createToken(assetUri);
         id = await nftTokenId.wait();
-        console.log(id);
         // get token id
         id = await id.events[0].args[2].toString();
+        console.log(id);
       } catch (error) {
         console.log("error here", error.message);
+        return;
       }
 
       const marketplaceContract = new ethers.Contract(
@@ -157,15 +158,21 @@ export default {
       try {
         // upload nft to marketplace
         let createAsset = await marketplaceContract.sellNftAsset(
-          "0x1Cc624328b642798fB1D112C6442dE6D36EbA531",
+          "0x59b670e9fA9D0A427751Af201D676719a970857b",
           id,
           price,
           overrides
         );
         createAsset = await createAsset.wait();
         console.log(createAsset);
+
+        // createAsset = await createAsset.events[0];
+        console.log("this is created", createAsset);
       } catch (error) {
-        console.log("this is error", error);
+        // reset ID
+        (id = null), console.log("this is error", error);
+        console.log(id);
+        return;
       }
 
       for (const keys in this.asset) {
