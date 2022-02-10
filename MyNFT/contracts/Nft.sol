@@ -8,9 +8,9 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 contract MyNFT is ERC721URIStorage {
  
   using Counters for Counters.Counter;
-  // unique token id's
+  
   Counters.Counter private _tokenIds;
-  address marketplaceContractAddress;
+  address public marketplaceContractAddress;
   
   constructor(address marketplace) ERC721("MyNFT-Tokens", "UMT") {
     marketplaceContractAddress = marketplace;
@@ -23,7 +23,7 @@ contract MyNFT is ERC721URIStorage {
     _mint(msg.sender, _tokenId);
     _setTokenURI(_tokenId, _tokenURI);
     setApprovalForAll(marketplaceContractAddress, true);
-  
-    _tokenId;
+ 
+   _tokenId;
   }
 }
