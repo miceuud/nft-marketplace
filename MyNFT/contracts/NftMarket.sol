@@ -4,15 +4,16 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract NFTMarket is ERC721URIStorage, ReentrancyGuard {
+contract NFTMarket is ERC721URIStorage, ReentrancyGuard, Ownable {
 
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
 
   address marketplaceOwner;
   uint listingPrice = 1 ether;
-  uint itemsCount;
+  uint public itemsCount;
 
   struct NftItem {
     uint index;
@@ -22,8 +23,6 @@ contract NFTMarket is ERC721URIStorage, ReentrancyGuard {
     bool sold;
     uint price;
   }
-  
-  NftItem[] myAssets;
 
   error NoAssetFound(string msg);
   mapping(uint => NftItem) public CreateAsset;
@@ -47,55 +46,46 @@ contract NFTMarket is ERC721URIStorage, ReentrancyGuard {
        false,
        nfAmount
       );
-      
-    // payable(marketplaceOwner).transfer(msg.value);
-  //  transfer right to maarketplace
     IERC721(nftAddress).transferFrom(msg.sender, address(this), _tokenId);
-
     emit Transfer(msg.sender,address(this), _tokenId); 
   }
 
-  function buyNftAsset (uint index) public payable nonReentrant {
-    uint price = CreateAsset[index].price;
-    uint tokenId = CreateAsset[index]._tokenId;
+  function buyNftAsset (address nftAddress,uint id) public payable nonReentrant {
+    uint price = CreateAsset[id].price;
+    uint tokenId = CreateAsset[id]._tokenId;
 
     require(msg.value == price, "please provide the price amount");
     
-    payable(CreateAsset[index].owner).transfer(msg.value);
-    // IERC721(nftAddress).safeTransferFrom(address(this), msg.sender, tokenId);
-    safeTransferFrom(address(this), msg.sender, tokenId);
+    payable(CreateAsset[id].owner).transfer(msg.value);
+    CreateAsset[id].sold = true;
+    CreateAsset[id].owner = msg.sender;
 
-    CreateAsset[index].owner = msg.sender;
-    CreateAsset[index].sold = true;
-
+    IERC721(nftAddress).transferFrom(address(this),msg.sender, tokenId);
     emit Transfer(address(this), msg.sender, tokenId);
   }
 
-  function listAllNft () public view returns (NftItem[] memory ) { 
-  
-    if(itemsCount > 0 ) {
-      NftItem[] memory nftItems = new NftItem[](itemsCount);
-    
-     for (uint256 index = 0; index <= itemsCount ; index++) {
-      //  nftItems.push(CreateAsset[index]);
-      nftItems[index] = CreateAsset[index];
-    }  
-    return nftItems;
-    } else {
-      revert NoAssetFound("no asset found");
+  function listAllNft () public onlyOwner view returns (NftItem[] memory)  { 
+    require(itemsCount > 0, "There are no items in the martketplace");
+
+    uint startingIndex = 0;
+    NftItem[] memory nftItems = new NftItem[](itemsCount);
+    for (uint256 index = 1; index <= itemsCount ; index++) {    
+        nftItems[startingIndex] = CreateAsset[index];
+        startingIndex += 1;  
     }
-    // } else revert NoAssetFound("No asset has been uploaded to the marketplace");
-   
-  }
+    return nftItems;
+  } 
 
-  function listMyAssets () public returns (NftItem[] memory){     
-     for (uint256 index = 0; index < itemsCount; index++) {
-       if (CreateAsset[index].owner == msg.sender) {
-          myAssets.push(CreateAsset[index]);   
-       } else revert NoAssetFound("You don't have any asset");
-        
-    } 
-   return myAssets;
-  }
+  function listMyAssets () public view returns (NftItem[] memory) {  
+     NftItem[] memory myAssets = new NftItem[](itemsCount);
+     uint startingIndex = 0;
 
+     for (uint256 index = 1; index <= itemsCount; index++) {
+        if (CreateAsset[index].owner == msg.sender) {
+         myAssets[startingIndex] = CreateAsset[index];
+        startingIndex += 1;
+       }
+   } 
+    return myAssets; 
+  }
 }
